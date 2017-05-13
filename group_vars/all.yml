@@ -1,14 +1,14 @@
 ---
 # group_vars/all.yml
-
+ansible_ssh_private_key_file: ~/.ssh/jpuskar.pem
+ansible_ssh_user: ubuntu
 region: us-east-1
 zone: us-east-1a
-keypair: YOUR_KEYPAIR
-security_groups: YOUR_SECURITY_GROUP
-instance_type: m3.medium
+keypair: jpuskar
+security_groups: atplanet_ansible-auto-scaling-tutorial
+instance_type: t1.micro
 volumes:
   - device_name: /dev/sda1
     device_type: gp2
     volume_size: 20
     delete_on_termination: true
-domain: YOUR_DOMAIN_NAME

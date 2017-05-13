@@ -18,10 +18,18 @@ You may optionally register and host a domain name with AWS Route 53. If you do 
 
 ## Setting up Ansible
 
+Configure keys.
+ 1. Copy your aws ssh key to ~/.ssh/key_name.pem.
+ 1. configure ./group_vars/all.yml like the following:
+```
+ansible_ssh_private_key_file: ~/.ssh/key_name.pem
+ansible_ssh_user: ubuntu
+```
+
 Ansible uses [Boto](https://github.com/boto/boto) for AWS interactions, so you'll need that installed on your control host. We're also going to make some use of the AWS CLI tools, so get those too. Your platform may differ, but the following will work for most platforms:
 
 ```bash
-pip install python-boto awscli
+pip install boto awscli
 ```
 
 We also assume Ansible 1.9.x, for Ubuntu you can get that from the Ansible PPA.

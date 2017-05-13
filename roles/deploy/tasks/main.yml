@@ -5,6 +5,7 @@
   apt:
     pkg: git
     state: present
+    update_cache: yes
   sudo: yes
 
 - name: Create www directory
@@ -21,10 +22,44 @@
     dest: /srv/www/webapp
     version: master
 
+- name: Install nodejs
+  apt:
+    pkg: nodejs
+    state: present
+    update_cache: yes
+  sudo: yes
+
+- name: Install npm
+  apt:
+    pkg: npm
+    state: present
+    update_cache: yes
+  sudo: yes
+
+- name: Install "express" node.js package.
+  npm:
+    name: express
+    path: /srv/www/webapp
+  sudo: yes
+
+- name: Install upstart
+  apt:
+    pkg: upstart
+    state: present
+  sudo: yes
+
+- name: Create upstart directory
+  file:
+    path: /etc/upstart
+    owner: ubuntu
+    group: ubuntu
+    state: directory
+  sudo: yes
+
 - name: Install upstart script
   copy:
     src: upstart.conf
-    dest: /etc/upstart/webapp.conf
+    dest: /etc/init/webapp.conf
   sudo: yes
 
 - name: Enable and start the application
