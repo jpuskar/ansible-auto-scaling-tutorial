@@ -12,5 +12,5 @@
     region: "{{ region }}"
     name: "{{ item.name }}"
     state: absent
-  with_items: old_lc_result.results
+  with_items: "{{ old_lc_result.results }}"
   ignore_errors: yes
