@@ -22,25 +22,25 @@
     - deploy
     - nginx
 
-#- hosts: ami-build
-#  connection: local
-#  gather_facts: no
-#  roles:
-#    - build-ami
-#    - create-launch-configuration
-#    - load-balancer
-#    - auto-scaling
+- hosts: ami-build
+  connection: local
+  gather_facts: no
+  roles:
+    - build-ami
+    - create-launch-configuration
+    - load-balancer
+    - auto-scaling
 #    - dns
-#
-#- hosts: localhost
-#  connection: local
-#  gather_facts: no
-#  roles:
-#    - delete-old-launch-configurations
-#    - delete-old-amis
-#
-#- hosts: old-ami-build
-#  connection: local
-#  gather_facts: no
-#  roles:
-#    - terminate
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  roles:
+    - delete-old-launch-configurations
+    - delete-old-amis
+
+- hosts: old-ami-build
+  connection: local
+  gather_facts: no
+  roles:
+    - terminate

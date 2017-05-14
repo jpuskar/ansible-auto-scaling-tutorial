@@ -6,7 +6,7 @@
     pkg: git
     state: present
     update_cache: yes
-  sudo: yes
+  become:  yes
 
 - name: Create www directory
   file:
@@ -14,7 +14,7 @@
     owner: ubuntu
     group: ubuntu
     state: directory
-  sudo: yes
+  become:  yes
 
 - name: Clone repository
   git:
@@ -27,26 +27,26 @@
     pkg: nodejs
     state: present
     update_cache: yes
-  sudo: yes
+  become:  yes
 
 - name: Install npm
   apt:
     pkg: npm
     state: present
     update_cache: yes
-  sudo: yes
+  become:  yes
 
 - name: Install "express" node.js package.
   npm:
     name: express
     path: /srv/www/webapp
-  sudo: yes
+  become:  yes
 
 - name: Install upstart
   apt:
     pkg: upstart
     state: present
-  sudo: yes
+  become: yes
 
 - name: Create upstart directory
   file:
@@ -54,17 +54,17 @@
     owner: ubuntu
     group: ubuntu
     state: directory
-  sudo: yes
+  become: yes
 
 - name: Install upstart script
   copy:
     src: upstart.conf
     dest: /etc/init/webapp.conf
-  sudo: yes
+  become: yes
 
 - name: Enable and start the application
   service:
     name: webapp
     enabled: yes
     state: restarted
-  sudo: yes
+  become:  yes

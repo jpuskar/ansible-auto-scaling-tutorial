@@ -4,25 +4,37 @@
 - name: Retrieve current Auto Scaling Group properties
   command: "aws --region {{ region }} autoscaling describe-auto-scaling-groups --auto-scaling-group-names webapp"
   register: asg_properties_result
+  when: asg_properties_result is not defined
 
 - name: Set asg_properties variable from JSON output if the Auto Scaling Group already exists
   set_fact:
     asg_properties: "{{ (asg_properties_result.stdout | from_json).AutoScalingGroups[0] }}"
   when: (asg_properties_result.stdout | from_json).AutoScalingGroups | count
 
+- name: Set variables for ASG due to default filter bug
+  set_fact:
+    asg_desired_capacity: "{{ asg_properties.DesiredCapacity }}"
+  when: asg_properties is defined
+
+- name: Set asg variables
+  set_fact:
+    asg_name: "webapp"
+    asg_min_size: 2
+    asg_max_size: 10
+
 - name: Configure Auto Scaling Group and perform rolling deploy
   ec2_asg:
     region: "{{ region }}"
     name: webapp
-    launch_config_name: webapp
+    launch_config_name: "{{ ec2_lc_result.name }}"
     availability_zones: "{{ zone }}"
     health_check_type: ELB
     health_check_period: 300
-    desired_capacity: "{{ asg_properties.DesiredCapacity | default(2) }}"
+    desired_capacity: "{{ (asg_desired_capacity | default(2)) | int }}"
     replace_all_instances: yes
-    replace_batch_size: "{{ (asg_properties.DesiredCapacity | default(2) / 4) | round(0, 'ceil') | int }}"
-    min_size: 2
-    max_size: 10
+    replace_batch_size: "{{ (((asg_desired_capacity | default(2)) | int) / 4) | round(0, 'ceil') | int }}"
+    min_size: "{{ asg_min_size }}"
+    max_size: "{{ asg_max_size }}"
     load_balancers:
       - webapp
     state: present
@@ -32,7 +44,7 @@
   ec2_scaling_policy:
     region: "{{ region }}"
     name: "{{ item.name }}"
-    asg_name: webapp
+    asg_name: "{{ asg_name }}"
     state: present
     adjustment_type: "{{ item.adjustment_type }}"
     min_adjustment_step: "{{ item.min_adjustment_step }}"
@@ -81,6 +93,6 @@
     dimensions:
       AutoScalingGroupName: "{{ asg_name }}"
     alarm_actions: "{{ item.alarm_actions }}"
-  with_items: metric_alarms
-  when: max_size > 1
+  with_items: "{{ metric_alarms }}"
+  when: asg_min_size > 1
   register: ma_result

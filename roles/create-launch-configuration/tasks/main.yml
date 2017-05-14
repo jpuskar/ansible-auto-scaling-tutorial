@@ -11,3 +11,4 @@
     security_groups: "{{ security_groups }}"
     volumes: "{{ volumes }}"
     instance_monitoring: yes
+  register: ec2_lc_result
